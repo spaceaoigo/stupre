@@ -155,7 +155,7 @@ LOGIN_REDIRECT_URL = 'home'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 
-TAILWIND_APP_NAME = 'theme'
+TAILWIND_APP_NAME = 'assets'
 
 INTERNAL_IPS = [
     "127.0.0.1",
