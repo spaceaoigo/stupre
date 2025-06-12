@@ -98,10 +98,10 @@ class LikeBase(LoginRequiredMixin, View):
         related_post = Post.objects.get(pk=pk)
 
         if self.request.user in related_post.like.all():
-            obj = related_post.like.remove(self.request.user)
+            related_post.like.remove(self.request.user)
         else:
-            obj = related_post.like.add(self.request.user)  
-        return obj
+            related_post.like.add(self.request.user)  
+        return
 
 
 class LikeHome(LikeBase):
@@ -131,10 +131,10 @@ class FollowBase(LoginRequiredMixin, View):
         my_connection = Connection.objects.get_or_create(user=self.request.user)
 
         if target_user in my_connection[0].following.all():
-            obj = my_connection[0].following.remove(target_user)
+            my_connection[0].following.remove(target_user)
         else:
-            obj = my_connection[0].following.add(target_user)
-        return obj
+            my_connection[0].following.add(target_user)
+        return
 
 class FollowHome(FollowBase):
     """HOMEページでフォローした場合"""
