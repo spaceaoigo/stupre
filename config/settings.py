@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'rest_framework',
     'tailwind',
-    'theme',
+    'assets',
 ]
 
 
