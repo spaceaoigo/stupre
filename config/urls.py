@@ -7,7 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('', include('records.urls')), # recordsアプリをルートURLに設定
-    path('', include('pwa.urls')),
+   # path('', include('pwa.urls')),
 ]
 
 if settings.DEBUG:
