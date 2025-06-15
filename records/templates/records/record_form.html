@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block title %}学習を記録する{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <h2 class="mb-4">学習を記録する</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">記録する</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
