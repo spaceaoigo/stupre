@@ -1,1 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
 
+{% block title %}タイムライン{% endblock %}
+
+{% block content %}
+<div class="container mx-auto" style="max-width: 600px;">
+    
+    {% for record in records %}
+    <div class="card bg-dark-2 border-secondary mb-3">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+                <img src="{{ record.user.profile_image.url }}" alt="{{ record.user.username }}" class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
+                <div>
+                    <h6 class="mb-0 fw-bold">{{ record.user.username }}</h6>
+                    <small class="text-muted">{{ record.created_at|timesince }}前</small>
+                </div>
+            </div>
+            
+            <a href="{% url 'records:record_detail' record.pk %}" class="text-decoration-none text-white">
+                <p class="card-text">{{ record.content|linebreaksbr }}</p>
+            </a>
+            
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <span class="badge bg-primary me-2"><i class="bi bi-clock-fill me-1"></i> {{ record.study_time }}分</span>
+                    <span class="badge bg-info"><i class="bi bi-bullseye me-1"></i> 集中度: {{ record.concentration }}/10</span>
+                </div>
+            </div>
+
+            {% if record.memo %}
+            <div class="memo-area p-2 rounded">
+                <small class="text-muted">{{ record.memo|linebreaksbr }}</small>
+            </div>
+            {% endif %}
+
+            <hr class="border-secondary my-2">
+
+            <div class="d-flex justify-content-around">
+                <button class="btn btn-link text-decoration-none text-muted like-btn" data-record-id="{{ record.pk }}">
+                    {% if record.pk in liked_records %}
+                        <i class="bi bi-heart-fill text-danger"></i>
+                        <span class="like-count">{{ record.likes.count }}</span>
+                    {% else %}
+                        <i class="bi bi-heart"></i>
+                        <span class="like-count">{{ record.likes.count }}</span>
+                    {% endif %}
+                </button>
+                <a href="{% url 'records:record_detail' record.pk %}" class="btn btn-link text-decoration-none text-muted">
+                    <i class="bi bi-chat-dots"></i> {{ record.comments.count }}
+                </a>
+                <a href="#" class="btn btn-link text-decoration-none text-muted"><i class="bi bi-share"></i> シェア</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-5">
+        <p class="text-muted">まだ学習記録がありません。</p>
+        <a href="{% url 'records:record_create' %}" class="btn btn-primary">最初の記録を投稿しよう！</a>
+    </div>
+    {% endfor %}
+
+    <!-- ページネーションの追加 -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">«</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">«</span></li>
+            {% endif %}
+
+            {% for i in page_obj.paginator.page_range %}
+                {% if page_obj.number == i %}
+                    <li class="page-item active" aria-current="page"><span class="page-link">{{ i }}</span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">»</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">»</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</div>
+
+<style>
+.bg-dark-2 { background-color: #1c1c1e !important; }
+.border-secondary { border-color: #38383a !important; }
+.memo-area { background-color: rgba(255, 255, 255, 0.05); }
+.btn-link { padding: 0.25rem 0.5rem; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const likeButtons = document.querySelectorAll('.like-btn');
+
+    likeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const recordId = button.dataset.recordId;
+            const csrftoken = getCookie('csrftoken');
+
+            fetch(`/record/${recordId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const icon = button.querySelector('i');
+                const countSpan = button.querySelector('.like-count');
+
+                if (data.liked) {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill', 'text-danger');
+                } else {
+                    icon.classList.remove('bi-heart-fill', 'text-danger');
+                    icon.classList.add('bi-heart');
+                }
+                countSpan.textContent = data.count;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // CSRFトークンを取得するためのヘルパー関数
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}
