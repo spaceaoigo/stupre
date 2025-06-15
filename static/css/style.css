@@ -1,0 +1,87 @@
+/*
+ * StudyPress Custom Stylesheet
+ * (A-2) ダークモードを基調とした、ミニマルでクリーンなUI
+ * (A-5) フッターナビゲーション
+ */
+
+/* --- 基本設定 --- */
+body {
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Kaku Gothic ProN", "メイリオ", meiryo, sans-serif;
+    background-color: #000; /* Apple風の純粋な黒 */
+    color: #f2f2f7; /* Apple風のオフホワイト */
+}
+
+/* --- ヘッダー --- */
+.app-header {
+    background-color: rgba(28, 28, 30, 0.85) !important; /* 半透明の背景 */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.profile-icon-sm {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+}
+
+/* --- メインコンテンツ --- */
+.container-fluid {
+    max-width: 960px; /* PC表示時の最大幅を制限 */
+}
+
+/* --- フォーム改善 (A-11) --- */
+.form-control, .form-select {
+    background-color: #2c2c2e;
+    border-color: #48484a;
+    color: #f2f2f7;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #3a3a3c;
+    border-color: #0a84ff; /* Apple風の青いアクセント */
+    box-shadow: 0 0 0 0.25rem rgba(10, 132, 255, 0.25);
+    color: #f2f2f7;
+}
+
+/* --- ボタン --- */
+.btn-primary {
+    background-color: #0a84ff;
+    border-color: #0a84ff;
+}
+
+/* --- モバイル用フッターナビゲーション (A-5) --- */
+.footer-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 55px; /* 高さを調整 */
+    background-color: rgba(28, 28, 30, 0.85); /* ヘッダーと同じ半透明 */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid rgba(84, 84, 88, 0.65);
+    padding-bottom: env(safe-area-inset-bottom); /* iPhoneのノッチ対応 */
+    z-index: 1030;
+}
+
+.footer-nav .nav-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #8e8e93; /* 非アクティブ時の色 */
+    font-size: 0.7rem;
+    padding: 0.2rem 0;
+}
+
+.footer-nav .nav-link.active {
+    color: #0a84ff; /* アクティブ時の色 */
+}
+
+.footer-nav .nav-link .nav-text {
+    margin-top: 2px;
+}
+
+.footer-nav .nav-link i {
+    font-size: 1.5rem; /* アイコンサイズ */
+}
