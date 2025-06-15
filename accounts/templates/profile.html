@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}プロフィール{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <img src="{{ user.profile_image.url }}" alt="{{ user.username }}" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+        <h2 class="fw-bold">{{ user.username }}</h2>
+        <p class="text-muted">Lv. {{ user.level }} | EXP: {{ user.experience }}</p>
+    </div>
+    <div class="card bg-dark-2 border-secondary mb-4 mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <h5 class="card-title mb-3">プロフィール</h5>
+            <p>{{ user.introduction|default_if_none:"自己紹介が設定されていません。"|linebreaksbr }}</p>
+            <hr class="border-secondary"><dl class="row"><dt class="col-sm-3">志望校</dt><dd class="col-sm-9">{{ user.target_school|default_if_none:"未設定" }}</dd><dt class="col-sm-3">メール</dt><dd class="col-sm-9">{{ user.email }}</dd></dl>
+        </div>
+    </div>
+    <div class="text-center">
+        <a href="#" class="btn btn-outline-light me-2">プロフィールを編集</a>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger">ログアウト</a>
+    </div>
+</div>
+<style>.bg-dark-2 { background-color: #1c1c1e !important; } .border-secondary { border-color: #38383a !important; }</style>
+{% endblock %}
