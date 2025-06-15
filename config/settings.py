@@ -1,16 +1,16 @@
 # (ファイル先頭部分の修正)
 import os
 from pathlib import Path
-# from dotenv import load_dotenv  <- この行はもう不要なのでコメントアウト or 削除
+from dotenv import load_dotenv
 
-# load_dotenv() <- この行も不要なのでコメントアウト or 削除
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECRET_KEY = os.environ.get('SECRET_KEY') 
-SECRET_KEY = '27c1 1k1*udnb*-u(hc=x&+(zox=v)cx1lqb^#ecbyw!77030e'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = False # 本番環境なのでFalseのまま
+DEBUG = True
 
 # ... 以下、ファイルの中身は変更なし ...
 
