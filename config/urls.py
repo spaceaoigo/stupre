@@ -5,6 +5,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('allauth.urls')), 
-    path('', include('snsapp.urls')), 
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('accounts/', include('accounts.urls')),
+    path('', include('posts.urls')),
+    
+    # PWA用のURLを追加
+    path('', include('pwa.urls')),
+]
+
+# メディアファイル配信のための設定
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
