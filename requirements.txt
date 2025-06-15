@@ -3,6 +3,4 @@ python-dotenv
 django-bootstrap5
 gunicorn
 whitenoise
-django-pwa
-django-tailwind
 Pillow
