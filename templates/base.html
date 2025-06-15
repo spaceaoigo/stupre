@@ -6,9 +6,9 @@
 <html lang="ja" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
-    <!-- PWA用のタグ (A-38) -->
+    <!-- PWA用のタグ (要件 38) -->
     {% progressive_web_app_meta %}
 
     <title>{% block title %}{% endblock %} | {{ PROJECT_NAME }}</title>
@@ -24,26 +24,31 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <!-- カスタムCSS (A-2) -->
+    <!-- カスタムCSS (要件 A-2) -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <header class="app-header sticky-top bg-dark border-bottom">
+    <!-- PC表示用ヘッダー (d-none d-md-block でモバイルでは非表示) -->
+    <header class="app-header sticky-top bg-dark border-bottom d-none d-md-block">
         <nav class="navbar navbar-expand">
-            <div class="container-fluid px-3">
-                <!-- ロゴ (A-1) -->
-                <a class="navbar-brand fw-bold" href="{% url 'posts:post_list' %}">{{ PROJECT_NAME }}</a>
+            <div class="container-fluid px-3" style="max-width: 960px;">
+                <!-- ロゴ (要件 A-1) -->
+                <a class="navbar-brand fw-bold" href="{% url 'records:record_list' %}">{{ PROJECT_NAME }}</a>
                 
                 <div class="ms-auto d-flex align-items-center">
                     {% if user.is_authenticated %}
-                        <!-- 通知システム (A-9) - アイコンのみ配置 -->
+                        <!-- 通知システム (要件 A-9) - アイコンのみ配置 -->
                         <a href="#" class="nav-link me-3"><i class="bi bi-bell fs-5"></i></a>
                         
                         <!-- プロフィールアイコン -->
                         <a href="{% url 'accounts:profile' %}">
+                            {% if user.profile_image %}
                             <img src="{{ user.profile_image.url }}" alt="{{ user.username }}" class="profile-icon-sm rounded-circle">
+                            {% else %}
+                            <img src="{% static 'images/default_profile.png' %}" alt="default icon" class="profile-icon-sm rounded-circle">
+                            {% endif %}
                         </a>
                     {% else %}
                         <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-sm me-2">ログイン</a>
@@ -54,27 +59,29 @@
         </nav>
     </header>
 
-    <main class="container-fluid py-4 mb-5">
+    <main class="container-fluid py-4 mb-5 pb-md-4">
         {% bootstrap_messages %}
         {% block content %}{% endblock %}
     </main>
 
-    <!-- モバイル用フッターナビゲーション (A-5) -->
+    <!-- モバイル用フッターナビゲーション (要件 A-5) -->
+    <!-- d-block d-md-none でモバイルでのみ表示 -->
     <footer class="footer-nav d-block d-md-none">
         <nav class="nav nav-pills nav-fill">
-            <!-- TODO: 今後の機能実装に合わせてURLを変更 -->
-            <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-house-door-fill"></i><span class="nav-text">ホーム</span></a>
+            <a class="nav-link {% if request.resolver_match.view_name == 'records:record_list' %}active{% endif %}" href="{% url 'records:record_list' %}"><i class="bi bi-house-door-fill"></i><span class="nav-text">ホーム</span></a>
             <a class="nav-link" href="#"><i class="bi bi-list-check"></i><span class="nav-text">計画</span></a>
-            <a class="nav-link" href="#"><i class="bi bi-plus-circle-fill fs-2"></i></a>
+            <!-- 中央の投稿ボタン -->
+            <a class="nav-link add-button" href="{% url 'records:record_create' %}"><i class="bi bi-plus-circle-fill fs-2"></i></a>
             <a class="nav-link" href="#"><i class="bi bi-graph-up"></i><span class="nav-text">分析</span></a>
-            <a class="nav-link" href="#"><i class="bi bi-person-fill"></i><span class="nav-text">マイページ</span></a>
+            <a class="nav-link {% if request.resolver_match.view_name == 'accounts:profile' %}active{% endif %}" href="{% url 'accounts:profile' %}"><i class="bi bi-person-fill"></i><span class="nav-text">マイページ</span></a>
         </nav>
     </footer>
 
     <!-- Bootstrap JS -->
     {% bootstrap_javascript %}
-    <!-- 触覚フィードバック用JS (A-13) -->
+    <!-- 触覚フィードバック用JS (要件 A-13) -->
     <script src="{% static 'js/haptic.js' %}"></script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>
