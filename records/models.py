@@ -17,3 +17,28 @@ class Record(models.Model):
 
     def __str__(self):
         return f'{self.user.username}の学習記録: {self.content[:20]}'
+
+# (Recordモデルの下に追記)
+
+class Like(models.Model):
+    """ F-2: いいねモデル """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    record = models.ForeignKey(Record, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # 1ユーザーが1投稿に1つしか「いいね」できないようにする
+        unique_together = ('user', 'record')
+
+class Comment(models.Model):
+    """ F-3: コメントモデル """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    record = models.ForeignKey(Record, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField('コメント内容', max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return self.text[:20]
