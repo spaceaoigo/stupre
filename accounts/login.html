@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block title %}ログイン{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px;">
+    <h2 class="text-center mb-4">ログイン</h2>
+    <form method="post" class="form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="d-grid gap-2">
+            {% bootstrap_button button_type="submit" content="ログイン" size="lg" %}
+        </div>
+    </form>
+    <p class="mt-3 text-center">
+        <a href="{% url 'accounts:password_reset' %}" class="text-muted">パスワードを忘れましたか？</a>
+    </p>
+    <hr>
+    <p class="text-center">
+        アカウントがまだありませんか？ <a href="{% url 'accounts:signup' %}">新規登録</a>
+    </p>
+</div>
+{% endblock %}
