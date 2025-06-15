@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django_bootstrap5', # 正しいライブラリ名に修正
     'pwa',
     'tailwind',
-    #'theme',             # `tailwind init`で作成されるアプリ
+    'theme',             # `tailwind init`で作成されるアプリ
 
     # my apps
     'accounts.apps.AccountsConfig',
