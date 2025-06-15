@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block title %}学習記録の詳細{% endblock %}
+
+{% block content %}
+<div class="container mx-auto" style="max-width: 600px;">
+
+    <!-- 学習記録の詳細表示 -->
+    <div class="card bg-dark-2 border-secondary mb-3">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+                <img src="{{ record.user.profile_image.url }}" alt="{{ record.user.username }}" class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
+                <div>
+                    <h6 class="mb-0 fw-bold">{{ record.user.username }}</h6>
+                    <small class="text-muted">{{ record.created_at|timesince }}前</small>
+                </div>
+            </div>
+            
+            <p class="card-text fs-5">{{ record.content|linebreaksbr }}</p>
+            
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <span class="badge bg-primary me-2"><i class="bi bi-clock-fill me-1"></i> {{ record.study_time }}分</span>
+                    <span class="badge bg-info"><i class="bi bi-bullseye me-1"></i> 集中度: {{ record.concentration }}/10</span>
+                </div>
+            </div>
+
+            {% if record.memo %}
+            <div class="memo-area p-2 rounded">
+                <small class="text-muted">{{ record.memo|linebreaksbr }}</small>
+            </div>
+            {% endif %}
+
+            <hr class="border-secondary my-2">
+
+            <div class="d-flex justify-content-around">
+                <button class="btn btn-link text-decoration-none text-muted like-btn" data-record-id="{{ record.pk }}">
+                    {% if is_liked %}
+                        <i class="bi bi-heart-fill text-danger"></i>
+                        <span class="like-count">{{ record.likes.count }}</span>
+                    {% else %}
+                        <i class="bi bi-heart"></i>
+                        <span class="like-count">{{ record.likes.count }}</span>
+                    {% endif %}
+                </button>
+                <a href="#comment-form" class="btn btn-link text-decoration-none text-muted">
+                    <i class="bi bi-chat-dots"></i> {{ record.comments.count }}
+                </a>
+                <a href="#" class="btn btn-link text-decoration-none text-muted"><i class="bi bi-share"></i> シェア</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- コメント投稿フォーム -->
+    <div class="card bg-dark-2 border-secondary mb-3">
+        <div class="card-body">
+            <h5 class="card-title">コメントする</h5>
+            <form action="{% url 'records:comment_create' record.pk %}" method="post" id="comment-form">
+                {% csrf_token %}
+                {% bootstrap_form comment_form %}
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">送信</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- コメント一覧 -->
+    <div class="card bg-dark-2 border-secondary">
+        <div class="card-body">
+            <h5 class="card-title mb-3">コメント ({{ record.comments.count }})</h5>
+            {% for comment in comments %}
+            <div class="d-flex mb-3">
+                <img src="{{ comment.user.profile_image.url }}" alt="{{ comment.user.username }}" class="rounded-circle me-3" width="32" height="32" style="object-fit: cover;">
+                <div class="w-100">
+                    <div class="d-flex justify-content-between">
+                        <small class="fw-bold">{{ comment.user.username }}</small>
+                        <small class="text-muted">{{ comment.created_at|timesince }}前</small>
+                    </div>
+                    <p class="mb-0">{{ comment.text|linebreaksbr }}</p>
+                </div>
+            </div>
+            {% if not forloop.last %}<hr class="border-secondary my-2">{% endif %}
+            {% empty %}
+            <p class="text-muted">まだコメントはありません。</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<style>
+.bg-dark-2 { background-color: #1c1c1e !important; }
+.border-secondary { border-color: #38383a !important; }
+.memo-area { background-color: rgba(255, 255, 255, 0.05); }
+.btn-link { padding: 0.25rem 0.5rem; }
+</style>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+// このページのいいねボタンにも同じスクリプトを適用
+document.addEventListener('DOMContentLoaded', () => {
+    const likeButton = document.querySelector('.like-btn'); // このページではボタンは1つ
+    if (likeButton) {
+        likeButton.addEventListener('click', () => {
+            const recordId = likeButton.dataset.recordId;
+            const csrftoken = getCookie('csrftoken');
+
+            fetch(`/record/${recordId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const icon = likeButton.querySelector('i');
+                const countSpan = likeButton.querySelector('.like-count');
+
+                if (data.liked) {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill', 'text-danger');
+                } else {
+                    icon.classList.remove('bi-heart-fill', 'text-danger');
+                    icon.classList.add('bi-heart');
+                }
+                countSpan.textContent = data.count;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
+
+    // CSRFトークンを取得するためのヘルパー関数
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}
