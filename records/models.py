@@ -18,8 +18,6 @@ class Record(models.Model):
     def __str__(self):
         return f'{self.user.username}の学習記録: {self.content[:20]}'
 
-# (Recordモデルの下に追記)
-
 class Like(models.Model):
     """ F-2: いいねモデル """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
