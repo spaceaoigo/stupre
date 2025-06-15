@@ -28,6 +28,7 @@ PROJECT_NAME = 'StudyPress'
 
 # Application definition
 
+# (一部抜粋)
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -35,18 +36,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     # 3rd party apps
     'bootstrap5',
-    # 【追加】PWA対応のためのライブラリ
     'pwa',
+
     # my apps
-    'accounts.apps.AccountsConfig',
-    'posts.apps.PostsConfig',
-    # 【提案】今後作成するアプリケーションを追加
-    # 'planner.apps.PlannerConfig',      # C: 計画・タスク管理機能
-    # 'tracker.apps.TrackerConfig',      # D: 学習記録機能
-    # 'analytics.apps.AnalyticsConfig',  # E: 可視化・分析機能
+    'accounts.apps.AccountsConfig', # ユーザー認証・プロフィール
+    'records.apps.RecordsConfig',   # 学習記録・SNS機能
 ]
+# (中略)
+# ログイン後のリダイレクト先を学習記録一覧に変更
+LOGIN_REDIRECT_URL = 'records:record_list'
+LOGOUT_REDIRECT_URL = 'records:record_list'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -142,8 +144,6 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 # （確認・提案）ログイン/ログアウト後のリダイレクト先
 # 今は投稿一覧ですが、将来的にはダッシュボード（今日のTODO画面など）に変更するのがおすすめです
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'posts:post_list'
-LOGOUT_REDIRECT_URL = 'posts:post_list'
 
 # django-bootstrap5 の設定
 BOOTSTRAP5 = {
